@@ -14,10 +14,7 @@
       property="og:url"
       content="https://matheussilvasantiagou.github.io/invites/"
     />
-    <meta
-      property="og:title"
-      content="ADRIANA'S 25/04 - Digital Invitation"
-    />
+    <meta property="og:title" content="ADRIANA'S 25/04 - Digital Invitation" />
     <meta
       property="og:description"
       content="Você está convidado(a)! 25 de abril — confirme presença e venha celebrar."
@@ -151,7 +148,12 @@
         background-repeat: no-repeat;
       }
       .domino-tile {
-        background: linear-gradient(145deg, #faf7f0 0%, #e8e2d4 55%, #ddd5c8 100%);
+        background: linear-gradient(
+          145deg,
+          #faf7f0 0%,
+          #e8e2d4 55%,
+          #ddd5c8 100%
+        );
         box-shadow:
           inset 0 1px 0 rgba(255, 255, 255, 0.85),
           inset 0 -2px 4px rgba(57, 56, 49, 0.06),
@@ -171,6 +173,32 @@
       }
     </style>
     <style>
+      /* --- VÍDEO DE FUNDO: edite só estes dois valores (0 a 1) --- */
+      :root {
+        --bg-video-opacidade: 1;
+        --bg-video-veu: 0.2;
+      }
+      #introVideo {
+        opacity: var(--bg-video-opacidade);
+        filter: saturate(0.88);
+      }
+      .bg-video-veu {
+        position: absolute;
+        inset: 0;
+        background: rgb(255 251 255 / var(--bg-video-veu));
+        pointer-events: none;
+      }
+
+      /* Cards do convite: um pouco transparentes só enquanto rola a página */
+      main [class*="bg-surface-container"],
+      main .bg-primary-container {
+        transition: opacity 0.35s ease;
+      }
+      body.is-scrolling main [class*="bg-surface-container"],
+      body.is-scrolling main .bg-primary-container {
+        opacity: 0.2;
+      }
+
       body {
         min-height: max(884px, 100dvh);
       }
@@ -194,6 +222,30 @@
   <body
     class="bg-surface font-body text-on-surface selection:bg-secondary-container selection:text-on-secondary-container overflow-x-hidden"
   >
+    <!-- Vídeo de fundo: opacidade em <style> → :root --bg-video-opacidade e --bg-video-veu -->
+    <div
+      class="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+      aria-hidden="true"
+    >
+      <video
+        id="introVideo"
+        class="absolute left-1/2 top-1/2 min-h-full min-w-full h-auto w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        poster="./assets/adrianapic.jpeg"
+      >
+        <source src="./assets/video.MOV" type="video/quicktime" />
+      </video>
+      <div class="bg-video-veu" aria-hidden="true"></div>
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-[#fdee73]/15 via-transparent to-surface/25"
+        aria-hidden="true"
+      ></div>
+    </div>
+
     <!-- TopAppBar -->
     <header
       class="bg-[#fdee73] dark:bg-[#6f6600] text-[#6f6600] dark:text-[#fdee73] docked full-width top-0 sticky z-50 border-none shadow-[0_10px_30px_-15px_rgba(111,102,0,0.3)] flex justify-between items-center w-full px-6 py-4 max-w-none"
@@ -209,7 +261,8 @@
         </h1>
       </div>
     </header>
-    <main class="max-w-4xl mx-auto px-6 pt-12 pb-16">
+
+    <main class="relative z-10 max-w-4xl mx-auto px-6 pt-12 pb-16">
       <!-- Hero Section: The Big Invite -->
       <section class="relative mb-20">
         <div
@@ -359,36 +412,58 @@
             </p>
           </div>
           <!-- Peças de dominó (faces no padrão clássico 3×3) -->
-          <div class="mt-auto flex flex-wrap items-end justify-center gap-5 sm:justify-start">
+          <div
+            class="mt-auto flex flex-wrap items-end justify-center gap-5 sm:justify-start"
+          >
             <!-- Peça 5 | 3 -->
             <div
               class="domino-tile flex h-[8.25rem] w-[5.25rem] flex-col overflow-hidden rounded-[10px] border-2 border-[#c4bdb0] rotate-[-6deg]"
               aria-hidden="true"
             >
-              <div class="grid min-h-0 flex-1 grid-cols-3 grid-rows-3 gap-0 px-2 py-2">
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+              <div
+                class="grid min-h-0 flex-1 grid-cols-3 grid-rows-3 gap-0 px-2 py-2"
+              >
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
                 <div class="flex items-center justify-center"></div>
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
                 <div class="flex items-center justify-center"></div>
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
                 <div class="flex items-center justify-center"></div>
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
                 <div class="flex items-center justify-center"></div>
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
               </div>
               <div
                 class="domino-groove mx-1.5 h-1.5 shrink-0 rounded-full bg-[#a39e92]/90"
               ></div>
-              <div class="grid min-h-0 flex-1 grid-cols-3 grid-rows-3 gap-0 px-2 py-2">
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+              <div
+                class="grid min-h-0 flex-1 grid-cols-3 grid-rows-3 gap-0 px-2 py-2"
+              >
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
                 <div class="flex items-center justify-center"></div>
                 <div class="flex items-center justify-center"></div>
                 <div class="flex items-center justify-center"></div>
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
                 <div class="flex items-center justify-center"></div>
                 <div class="flex items-center justify-center"></div>
                 <div class="flex items-center justify-center"></div>
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
               </div>
             </div>
             <!-- Peça 6 | 2 -->
@@ -396,22 +471,40 @@
               class="domino-tile flex h-[8.25rem] w-[5.25rem] flex-col overflow-hidden rounded-[10px] border-2 border-[#c4bdb0] translate-y-3 rotate-[8deg]"
               aria-hidden="true"
             >
-              <div class="grid min-h-0 flex-1 grid-cols-3 grid-rows-3 gap-0 px-2 py-2">
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+              <div
+                class="grid min-h-0 flex-1 grid-cols-3 grid-rows-3 gap-0 px-2 py-2"
+              >
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
                 <div class="flex items-center justify-center"></div>
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
                 <div class="flex items-center justify-center"></div>
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
                 <div class="flex items-center justify-center"></div>
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
               </div>
               <div
                 class="domino-groove mx-1.5 h-1.5 shrink-0 rounded-full bg-[#a39e92]/90"
               ></div>
-              <div class="grid min-h-0 flex-1 grid-cols-3 grid-rows-3 gap-0 px-2 py-2">
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+              <div
+                class="grid min-h-0 flex-1 grid-cols-3 grid-rows-3 gap-0 px-2 py-2"
+              >
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
                 <div class="flex items-center justify-center"></div>
                 <div class="flex items-center justify-center"></div>
                 <div class="flex items-center justify-center"></div>
@@ -419,7 +512,9 @@
                 <div class="flex items-center justify-center"></div>
                 <div class="flex items-center justify-center"></div>
                 <div class="flex items-center justify-center"></div>
-                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center">
+                  <span class="domino-pip"></span>
+                </div>
               </div>
             </div>
           </div>
@@ -494,7 +589,7 @@
           </div>
         </div>
         <p
-          class="font-headline font-black text-primary tracking-widest text-sm uppercase"
+          class="font-headline font-black tracking-widest text-sm uppercase text-white bg-on-surface/90 rounded-xl px-5 py-2.5 text-center shadow-sm"
         >
           Endereço será enviado via WhatsApp
         </p>
@@ -541,7 +636,9 @@
           >
             Campeonato de dominó
           </h3>
-          <p class="mt-3 font-body text-base leading-relaxed text-on-surface-variant">
+          <p
+            class="mt-3 font-body text-base leading-relaxed text-on-surface-variant"
+          >
             Você vai participar do campeonato de dominó?
           </p>
           <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -604,7 +701,9 @@
           >
             Quase lá
           </h3>
-          <p class="mt-3 font-body text-base leading-relaxed text-on-surface-variant">
+          <p
+            class="mt-3 font-body text-base leading-relaxed text-on-surface-variant"
+          >
             Quando o WhatsApp abrir,
             <span class="font-bold text-secondary"
               >selecione o número (o contato) da Adriana</span
@@ -725,11 +824,15 @@
         var whatsappHintModal = document.getElementById("whatsappHintModal");
         var btnConfirmar = document.getElementById("btnConfirmar");
         var btnEnviarWpp = document.getElementById("btnEnviarConfirmacaoWpp");
-        if (!dominoModal || !whatsappHintModal || !btnConfirmar || !btnEnviarWpp)
+        if (
+          !dominoModal ||
+          !whatsappHintModal ||
+          !btnConfirmar ||
+          !btnEnviarWpp
+        )
           return;
 
-        var baseMsg =
-          "Confirmo presença no seu aniversário dia 25 de abril.";
+        var baseMsg = "Confirmo presença no seu aniversário dia 25 de abril.";
         var pendingParticipaDominio = null;
 
         function openDomino() {
@@ -772,24 +875,28 @@
           window.open(
             "https://api.whatsapp.com/send?text=" + text,
             "_blank",
-            "noopener,noreferrer"
+            "noopener,noreferrer",
           );
         }
 
         btnConfirmar.addEventListener("click", openDomino);
 
-        dominoModal.querySelectorAll("[data-close-domino]").forEach(function (el) {
-          el.addEventListener("click", closeDomino);
-        });
-
-        dominoModal.querySelectorAll("[data-domino-choice]").forEach(function (el) {
-          el.addEventListener("click", function () {
-            var sim = el.getAttribute("data-domino-choice") === "sim";
-            pendingParticipaDominio = sim;
-            closeDomino();
-            openWhatsappHint();
+        dominoModal
+          .querySelectorAll("[data-close-domino]")
+          .forEach(function (el) {
+            el.addEventListener("click", closeDomino);
           });
-        });
+
+        dominoModal
+          .querySelectorAll("[data-domino-choice]")
+          .forEach(function (el) {
+            el.addEventListener("click", function () {
+              var sim = el.getAttribute("data-domino-choice") === "sim";
+              pendingParticipaDominio = sim;
+              closeDomino();
+              openWhatsappHint();
+            });
+          });
 
         whatsappHintModal
           .querySelectorAll("[data-close-whatsapp-hint]")
@@ -813,6 +920,37 @@
             closeDomino();
           }
         });
+      })();
+    </script>
+    <script>
+      (function () {
+        var v = document.getElementById("introVideo");
+        if (!v) return;
+        v.muted = true;
+        function tryPlay() {
+          v.play().catch(function () {});
+        }
+        tryPlay();
+        document.addEventListener("visibilitychange", function () {
+          if (!document.hidden) tryPlay();
+        });
+      })();
+    </script>
+    <script>
+      (function () {
+        var body = document.body;
+        var done;
+        window.addEventListener(
+          "scroll",
+          function () {
+            body.classList.add("is-scrolling");
+            clearTimeout(done);
+            done = setTimeout(function () {
+              body.classList.remove("is-scrolling");
+            }, 160);
+          },
+          { passive: true },
+        );
       })();
     </script>
   </body>
