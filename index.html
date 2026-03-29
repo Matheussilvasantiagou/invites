@@ -307,6 +307,49 @@
       </div>
     </header>
 
+    <!-- Música: autoplay tenta ao abrir; navegadores podem exigir primeiro toque/scroll -->
+    <audio
+      id="bgMusic"
+      autoplay
+      loop
+      playsinline
+      preload="auto"
+    >
+      <source src="./assets/as-it-was.mp3" type="audio/mpeg" />
+    </audio>
+    <button
+      id="btnMusic"
+      type="button"
+      class="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-4 z-[45] flex h-14 w-14 items-center justify-center rounded-full border-2 border-primary/35 bg-[#fdee73] text-primary shadow-lg transition hover:brightness-105 active:scale-95 md:right-8"
+      aria-pressed="false"
+      aria-label="Tocar música de fundo"
+    >
+      <span
+        id="btnMusicIcon"
+        class="material-symbols-outlined text-[26px]"
+        style="font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 500"
+        >music_note</span
+      >
+    </button>
+
+    <div
+      id="soundHint"
+      class="fixed bottom-[5.5rem] left-4 right-4 z-[44] mx-auto hidden max-w-md rounded-lg border border-white/15 bg-on-surface/93 px-4 py-3 text-center shadow-[0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-sm md:bottom-[5.75rem]"
+      role="status"
+      aria-live="polite"
+    >
+      <p class="font-label text-sm font-bold leading-snug text-white">
+        Toque na tela para ouvir a música.
+      </p>
+      <button
+        id="soundHintActivate"
+        type="button"
+        class="mt-3 w-full rounded-full bg-[#fdee73] px-4 py-2 font-label text-sm font-extrabold text-primary shadow-md transition hover:brightness-105 active:scale-[0.98]"
+      >
+        Ativar som
+      </button>
+    </div>
+
     <main class="relative z-10 max-w-4xl mx-auto px-6 pt-12 pb-16">
       <!-- Hero Section: The Big Invite -->
       <section class="relative mb-20">
@@ -995,6 +1038,135 @@
           },
           { passive: true },
         );
+      })();
+    </script>
+    <script>
+      (function () {
+        var audio = document.getElementById("bgMusic");
+        var btn = document.getElementById("btnMusic");
+        var icon = document.getElementById("btnMusicIcon");
+        var soundHint = document.getElementById("soundHint");
+        var soundHintBtn = document.getElementById("soundHintActivate");
+        if (!audio || !btn || !icon) return;
+
+        audio.volume = 0.85;
+        var explicitlyPaused = false;
+        var unlockAttached = false;
+
+        function showSoundHint() {
+          if (soundHint) soundHint.classList.remove("hidden");
+        }
+
+        function hideSoundHint() {
+          if (soundHint) soundHint.classList.add("hidden");
+        }
+
+        function syncUi() {
+          var on = !audio.paused;
+          btn.setAttribute("aria-pressed", on ? "true" : "false");
+          btn.setAttribute(
+            "aria-label",
+            on ? "Pausar música" : "Tocar música de fundo",
+          );
+          icon.textContent = on ? "pause" : "music_note";
+          icon.style.fontVariationSettings = on
+            ? '"FILL" 1, "wght" 500'
+            : '"FILL" 0, "wght" 500';
+        }
+
+        function removeUnlockListeners() {
+          if (!unlockAttached) return;
+          unlockAttached = false;
+          document.removeEventListener("pointerdown", tryUnlock, true);
+          document.removeEventListener("touchstart", tryUnlock, true);
+          document.removeEventListener("keydown", tryUnlock, true);
+          window.removeEventListener("scroll", tryUnlock, true);
+        }
+
+        function tryUnlock() {
+          if (explicitlyPaused || !audio.paused) {
+            removeUnlockListeners();
+            return;
+          }
+          audio
+            .play()
+            .then(function () {
+              syncUi();
+              hideSoundHint();
+              removeUnlockListeners();
+            })
+            .catch(syncUi);
+        }
+
+        function attachUnlockListeners() {
+          if (unlockAttached) return;
+          unlockAttached = true;
+          document.addEventListener("pointerdown", tryUnlock, true);
+          document.addEventListener("touchstart", tryUnlock, true);
+          document.addEventListener("keydown", tryUnlock, true);
+          window.addEventListener("scroll", tryUnlock, { passive: true });
+        }
+
+        function tryAutoplay() {
+          if (explicitlyPaused) return;
+          audio
+            .play()
+            .then(function () {
+              syncUi();
+              hideSoundHint();
+              removeUnlockListeners();
+            })
+            .catch(function () {
+              syncUi();
+              attachUnlockListeners();
+              showSoundHint();
+            });
+        }
+
+        btn.addEventListener("click", function () {
+          if (audio.paused) {
+            explicitlyPaused = false;
+            audio
+              .play()
+              .then(function () {
+                syncUi();
+                hideSoundHint();
+              })
+              .catch(syncUi);
+          } else {
+            explicitlyPaused = true;
+            audio.pause();
+            hideSoundHint();
+            syncUi();
+            removeUnlockListeners();
+          }
+        });
+
+        if (soundHintBtn) {
+          soundHintBtn.addEventListener("click", function () {
+            explicitlyPaused = false;
+            tryUnlock();
+          });
+        }
+
+        audio.addEventListener("play", function () {
+          syncUi();
+          hideSoundHint();
+          if (!explicitlyPaused) removeUnlockListeners();
+        });
+        audio.addEventListener("pause", syncUi);
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", tryAutoplay);
+        } else {
+          tryAutoplay();
+        }
+
+        window.addEventListener("pageshow", function (e) {
+          if (e.persisted && !explicitlyPaused) tryAutoplay();
+        });
+
+        syncUi();
       })();
     </script>
   </body>
