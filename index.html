@@ -199,6 +199,12 @@
         opacity: 0.2;
       }
 
+      /* Cantos arredondados estáveis com filhos transformados (Safari / iOS) */
+      .hero-invite-card {
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+      }
+
       body {
         min-height: max(884px, 100dvh);
       }
@@ -273,10 +279,10 @@
           >
         </div>
         <div
-          class="bg-surface-container-low rounded-lg p-6 sm:p-8 md:p-16 relative overflow-hidden text-center md:text-left shadow-sm flex flex-col md:block"
+          class="hero-invite-card bg-surface-container-low relative isolate overflow-hidden rounded-2xl p-6 text-center shadow-sm flex flex-col min-w-0 sm:p-8 md:block md:p-16 md:text-left"
         >
           <div
-            class="absolute top-0 right-0 w-64 h-64 bg-primary-container/30 rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none"
+            class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-primary-container/30 blur-3xl md:-right-20 md:-top-20 md:h-64 md:w-64"
           ></div>
           <h2
             class="font-headline font-black text-primary leading-[1.08] uppercase tracking-tighter mb-6 relative z-10 w-full max-w-full pr-0 md:pr-[15rem] text-[clamp(1.75rem,8.5vw,3.5rem)] md:text-8xl"
@@ -285,7 +291,7 @@
             <span class="text-secondary">Convidado(a)!</span>
           </h2>
           <div
-            class="relative z-20 mx-auto mb-8 h-36 w-36 shrink-0 rotate-6 transition-transform hover:scale-105 duration-300 sm:h-40 sm:w-40 md:absolute md:top-8 md:right-10 md:mb-0 md:mx-0 md:h-48 md:w-48 md:hover:scale-110"
+            class="relative z-20 mx-auto mb-8 h-36 w-36 shrink-0 rotate-3 transition-transform duration-300 hover:scale-105 sm:h-40 sm:w-40 md:absolute md:top-8 md:right-10 md:mx-0 md:mb-0 md:h-48 md:w-48 md:rotate-6 md:hover:scale-110"
           >
             <img
               alt="Adriana"
