@@ -109,6 +109,25 @@
         background-position: center;
         background-repeat: no-repeat;
       }
+      .domino-tile {
+        background: linear-gradient(145deg, #faf7f0 0%, #e8e2d4 55%, #ddd5c8 100%);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.85),
+          inset 0 -2px 4px rgba(57, 56, 49, 0.06),
+          3px 6px 14px rgba(57, 56, 49, 0.18);
+      }
+      .domino-groove {
+        box-shadow:
+          inset 0 1px 2px rgba(57, 56, 49, 0.25),
+          0 1px 0 rgba(255, 255, 255, 0.6);
+      }
+      .domino-pip {
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 9999px;
+        background: radial-gradient(circle at 30% 30%, #5c5a52, #1a1916);
+        box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.35);
+      }
     </style>
     <style>
       body {
@@ -263,7 +282,7 @@
               class="font-headline font-black text-xs uppercase tracking-widest text-primary block mb-2"
               >Instrução Especial</span
             >
-            <p class="font-bold text-on-primary-container leading-tight">
+            <p class="text-sm font-bold leading-snug text-on-primary-container">
               "Traga um presente engraçado para o bingo (vibe inimigo secreto)!"
             </p>
           </div>
@@ -297,36 +316,68 @@
               na hora e mostre quem manda na mesa.
             </p>
           </div>
-          <!-- Domino Visual Elements -->
-          <div class="mt-auto flex gap-4">
+          <!-- Peças de dominó (faces no padrão clássico 3×3) -->
+          <div class="mt-auto flex flex-wrap items-end justify-center gap-5 sm:justify-start">
+            <!-- Peça 5 | 3 -->
             <div
-              class="w-20 h-32 bg-white rounded-md flex flex-col shadow-md rotate-[-5deg] border border-outline-variant/20 overflow-hidden"
+              class="domino-tile flex h-[8.25rem] w-[5.25rem] flex-col overflow-hidden rounded-[10px] border-2 border-[#c4bdb0] rotate-[-6deg]"
+              aria-hidden="true"
             >
-              <div class="flex-1 flex items-center justify-center p-2">
-                <div class="grid grid-cols-2 gap-1">
-                  <div class="w-2 h-2 bg-on-surface rounded-full"></div>
-                  <div class="w-2 h-2 bg-on-surface rounded-full"></div>
-                  <div class="w-2 h-2 bg-on-surface rounded-full"></div>
-                  <div class="w-2 h-2 bg-on-surface rounded-full"></div>
-                </div>
+              <div class="grid min-h-0 flex-1 grid-cols-3 grid-rows-3 gap-0 px-2 py-2">
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
               </div>
-              <div class="h-[2px] w-full bg-outline-variant/30"></div>
-              <div class="flex-1 flex items-center justify-center p-2">
-                <div class="w-2 h-2 bg-on-surface rounded-full"></div>
+              <div
+                class="domino-groove mx-1.5 h-1.5 shrink-0 rounded-full bg-[#a39e92]/90"
+              ></div>
+              <div class="grid min-h-0 flex-1 grid-cols-3 grid-rows-3 gap-0 px-2 py-2">
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
               </div>
             </div>
+            <!-- Peça 6 | 2 -->
             <div
-              class="w-20 h-32 bg-white rounded-md flex flex-col shadow-md rotate-[10deg] border border-outline-variant/20 overflow-hidden translate-y-4"
+              class="domino-tile flex h-[8.25rem] w-[5.25rem] flex-col overflow-hidden rounded-[10px] border-2 border-[#c4bdb0] translate-y-3 rotate-[8deg]"
+              aria-hidden="true"
             >
-              <div class="flex-1 flex items-center justify-center p-2">
-                <div class="w-2 h-2 bg-on-surface rounded-full"></div>
+              <div class="grid min-h-0 flex-1 grid-cols-3 grid-rows-3 gap-0 px-2 py-2">
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
               </div>
-              <div class="h-[2px] w-full bg-outline-variant/30"></div>
-              <div class="flex-1 flex items-center justify-center p-2">
-                <div class="grid grid-cols-2 gap-1">
-                  <div class="w-2 h-2 bg-on-surface rounded-full"></div>
-                  <div class="w-2 h-2 bg-on-surface rounded-full"></div>
-                </div>
+              <div
+                class="domino-groove mx-1.5 h-1.5 shrink-0 rounded-full bg-[#a39e92]/90"
+              ></div>
+              <div class="grid min-h-0 flex-1 grid-cols-3 grid-rows-3 gap-0 px-2 py-2">
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"></div>
+                <div class="flex items-center justify-center"><span class="domino-pip"></span></div>
               </div>
             </div>
           </div>
