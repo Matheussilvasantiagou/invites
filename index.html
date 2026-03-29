@@ -183,6 +183,29 @@
         filter: saturate(0.88);
         transition: filter 0.55s ease;
       }
+      /* Smartphone: viewport estável (barra do navegador) + enquadre em retrato */
+      @media (max-width: 767px) {
+        #introVideo {
+          object-position: center 28%;
+          width: auto;
+          height: auto;
+          min-width: 100%;
+          min-height: 100%;
+          min-height: 100dvh;
+          min-height: 100svh;
+          /* Retrato + vídeo largo (ex. 16:9): cobre a tela sem faixas nas laterais */
+          min-width: max(100%, 177.78svh);
+        }
+        @media (orientation: landscape) {
+          #introVideo {
+            object-position: center center;
+            min-width: 100%;
+            min-height: 100%;
+            min-height: 100dvh;
+            min-height: 100svh;
+          }
+        }
+      }
       .bg-video-veu {
         position: absolute;
         inset: 0;
@@ -202,16 +225,6 @@
       }
       body.is-video-lounge #introVideo {
         filter: saturate(1);
-      }
-
-      /* Cards do convite: um pouco transparentes só enquanto rola a página */
-      main [class*="bg-surface-container"],
-      main .bg-primary-container {
-        transition: opacity 0.35s ease;
-      }
-      body.is-scrolling main [class*="bg-surface-container"],
-      body.is-scrolling main .bg-primary-container {
-        opacity: 0.2;
       }
 
       /* Raio único para todos os cards do convite (= theme borderRadius.lg → 2rem) */
@@ -289,11 +302,57 @@
           transform: scale(1) translateY(0);
         }
       }
+
+      body.page-loading {
+        overflow: hidden;
+      }
+      #pageLoader {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.25rem;
+        background: #fffbff;
+        transition:
+          opacity 0.5s ease,
+          visibility 0.5s ease;
+      }
+      #pageLoader.is-done {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      #pageLoader .page-loader-spin {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 9999px;
+        border: 3px solid rgba(111, 102, 0, 0.2);
+        border-top-color: #6f6600;
+        animation: pageLoaderSpin 0.75s linear infinite;
+      }
+      @keyframes pageLoaderSpin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
   <body
-    class="bg-surface font-body text-on-surface selection:bg-secondary-container selection:text-on-secondary-container overflow-x-hidden"
+    class="page-loading bg-surface font-body text-on-surface selection:bg-secondary-container selection:text-on-secondary-container overflow-x-hidden"
   >
+    <div
+      id="pageLoader"
+      class="fixed inset-0 z-[9999]"
+      aria-busy="true"
+      aria-live="polite"
+      aria-label="Carregando o convite"
+    >
+      <div class="page-loader-spin" aria-hidden="true"></div>
+      <p class="font-headline text-lg font-black uppercase tracking-tight text-primary">
+        Carregando…
+      </p>
+    </div>
+
     <!-- Vídeo de fundo: opacidade em <style> → :root --bg-video-opacidade e --bg-video-veu -->
     <div
       class="pointer-events-none fixed inset-0 z-0 overflow-hidden"
@@ -1101,19 +1160,26 @@
     </script>
     <script>
       (function () {
+        var loader = document.getElementById("pageLoader");
         var body = document.body;
-        var done;
-        window.addEventListener(
-          "scroll",
-          function () {
-            body.classList.add("is-scrolling");
-            clearTimeout(done);
-            done = setTimeout(function () {
-              body.classList.remove("is-scrolling");
-            }, 160);
-          },
-          { passive: true },
-        );
+        function finishLoad() {
+          body.classList.remove("page-loading");
+          if (!loader) return;
+          loader.classList.add("is-done");
+          loader.setAttribute("aria-busy", "false");
+          var removeAfter = 550;
+          setTimeout(function () {
+            if (loader.parentNode) loader.parentNode.removeChild(loader);
+          }, removeAfter);
+        }
+        if (document.readyState === "complete") {
+          finishLoad();
+        } else {
+          window.addEventListener("load", finishLoad);
+        }
+        window.addEventListener("pageshow", function (e) {
+          if (e.persisted) finishLoad();
+        });
       })();
     </script>
     <script>
