@@ -181,12 +181,27 @@
       #introVideo {
         opacity: var(--bg-video-opacidade);
         filter: saturate(0.88);
+        transition: filter 0.55s ease;
       }
       .bg-video-veu {
         position: absolute;
         inset: 0;
         background: rgb(255 251 255 / var(--bg-video-veu));
         pointer-events: none;
+        transition: opacity 0.55s ease;
+      }
+      #bgVideoGradient {
+        transition: opacity 0.55s ease;
+      }
+      /* Fim da página: área vazia — tira o véu/gradiente pra ver o vídeo nítido */
+      body.is-video-lounge .bg-video-veu {
+        opacity: 0;
+      }
+      body.is-video-lounge #bgVideoGradient {
+        opacity: 0;
+      }
+      body.is-video-lounge #introVideo {
+        filter: saturate(1);
       }
 
       /* Cards do convite: um pouco transparentes só enquanto rola a página */
@@ -286,6 +301,7 @@
       </video>
       <div class="bg-video-veu" aria-hidden="true"></div>
       <div
+        id="bgVideoGradient"
         class="absolute inset-0 bg-gradient-to-b from-[#fdee73]/15 via-transparent to-surface/25"
         aria-hidden="true"
       ></div>
@@ -681,6 +697,13 @@
           Endereço será enviado via WhatsApp
         </p>
       </div>
+
+      <!-- Área vazia no fim: quem rolar até aqui vê só o vídeo de fundo (sem cards) -->
+      <div
+        id="videoLoungeSpacer"
+        class="relative z-10 mt-16 w-full min-h-[min(130svh,60rem)] shrink-0 pb-[max(7rem,env(safe-area-inset-bottom))] md:mt-20 md:min-h-[min(150svh,72rem)]"
+        aria-hidden="true"
+      ></div>
     </main>
 
     <!-- Modal dominó (antes do WhatsApp) -->
@@ -1021,6 +1044,27 @@
         document.addEventListener("visibilitychange", function () {
           if (!document.hidden) tryPlay();
         });
+      })();
+    </script>
+    <script>
+      (function () {
+        var spacer = document.getElementById("videoLoungeSpacer");
+        if (!spacer || !("IntersectionObserver" in window)) return;
+        var obs = new IntersectionObserver(
+          function (entries) {
+            var on = false;
+            for (var i = 0; i < entries.length; i++) {
+              var e = entries[i];
+              if (e.isIntersecting && e.intersectionRatio >= 0.22) {
+                on = true;
+                break;
+              }
+            }
+            document.body.classList.toggle("is-video-lounge", on);
+          },
+          { root: null, threshold: [0, 0.1, 0.22, 0.35, 0.5, 0.75, 1] },
+        );
+        obs.observe(spacer);
       })();
     </script>
     <script>
