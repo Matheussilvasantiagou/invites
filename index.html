@@ -134,7 +134,8 @@
         min-height: max(884px, 100dvh);
       }
       #talvezModal.is-open .talvez-modal-card,
-      #dominoModal.is-open .domino-modal-card {
+      #dominoModal.is-open .domino-modal-card,
+      #whatsappHintModal.is-open .whatsapp-hint-modal-card {
         animation: talvezModalIn 0.28s ease-out both;
       }
       @keyframes talvezModalIn {
@@ -407,11 +408,11 @@
           garantirmos sua cartela de bingo personalizada.
         </p>
         <div
-          class="flex flex-col md:flex-row gap-4 justify-center items-center relative z-10"
+          class="flex w-full max-w-md flex-col gap-4 md:max-w-none md:flex-row md:justify-center relative z-10 mx-auto md:mx-0"
         >
           <button
             id="btnConfirmar"
-            class="bg-secondary text-white px-10 py-5 rounded-full font-black text-xl shadow-xl hover:scale-105 transition-transform active:scale-95 flex items-center gap-3"
+            class="inline-flex min-h-[3.75rem] w-full flex-1 items-center justify-center gap-3 rounded-full bg-secondary px-10 py-5 font-black text-xl text-white shadow-xl transition-transform hover:scale-105 active:scale-95 md:min-w-[18rem] md:flex-initial"
             type="button"
           >
             <span
@@ -423,7 +424,7 @@
           </button>
           <button
             id="btnTalvez"
-            class="bg-white border-4 border-primary/20 text-primary px-10 py-5 rounded-full font-black text-xl hover:bg-primary-container/20 transition-colors active:scale-95"
+            class="inline-flex min-h-[3.75rem] w-full flex-1 items-center justify-center rounded-full border-4 border-primary/20 bg-white px-10 py-5 font-black text-xl text-primary transition-colors hover:bg-primary-container/20 active:scale-95 md:min-w-[18rem] md:flex-initial"
             type="button"
           >
             TALVEZ
@@ -489,7 +490,7 @@
         </button>
         <div class="px-6 pb-7 pt-6 text-center">
           <div
-            class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fdee73]/90 text-primary shadow-inner ring-1 ring-primary/20"
+            class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-container/90 text-primary shadow-inner ring-1 ring-primary/20"
           >
             <span class="material-symbols-outlined text-[34px]">grid_view</span>
           </div>
@@ -518,6 +519,64 @@
               Não
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: lembrete do contato da Adriana no WhatsApp -->
+    <div
+      id="whatsappHintModal"
+      class="fixed inset-0 z-[102] hidden items-center justify-center p-4 sm:p-6"
+      aria-hidden="true"
+      aria-labelledby="whatsappHintTitle"
+      role="dialog"
+    >
+      <button
+        type="button"
+        class="absolute inset-0 bg-on-surface/45 backdrop-blur-[2px] transition-opacity"
+        data-close-whatsapp-hint
+        aria-label="Fechar"
+      ></button>
+      <div
+        class="whatsapp-hint-modal-card relative z-10 w-full max-w-[min(100%,24rem)] overflow-hidden rounded-[2rem] border border-outline-variant/30 bg-surface-container-low shadow-[0_24px_60px_rgba(57,56,49,0.22)]"
+      >
+        <div
+          class="h-2 w-full bg-gradient-to-r from-primary-container via-secondary-container to-tertiary-container"
+        ></div>
+        <button
+          type="button"
+          class="absolute right-3 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-primary shadow-sm ring-1 ring-outline-variant/30 transition hover:bg-white"
+          data-close-whatsapp-hint
+          aria-label="Fechar"
+        >
+          <span class="material-symbols-outlined text-[22px]">close</span>
+        </button>
+        <div class="px-6 pb-7 pt-6 text-center">
+          <div
+            class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-container/90 text-primary shadow-inner ring-1 ring-primary/20"
+          >
+            <span class="material-symbols-outlined text-[34px]">chat</span>
+          </div>
+          <h3
+            id="whatsappHintTitle"
+            class="font-headline text-xl font-black uppercase tracking-tight text-primary sm:text-2xl"
+          >
+            Quase lá
+          </h3>
+          <p class="mt-3 font-body text-base leading-relaxed text-on-surface-variant">
+            Quando o WhatsApp abrir,
+            <span class="font-bold text-secondary"
+              >selecione o número (o contato) da Adriana</span
+            >
+            para enviar sua confirmação — assim a mensagem chega para ela.
+          </p>
+          <button
+            id="btnEnviarConfirmacaoWpp"
+            type="button"
+            class="mt-7 w-full rounded-full bg-secondary px-6 py-3.5 font-label text-base font-extrabold text-white shadow-md transition hover:brightness-105 active:scale-[0.98]"
+          >
+            Enviar confirmação
+          </button>
         </div>
       </div>
     </div>
@@ -622,11 +681,15 @@
     <script>
       (function () {
         var dominoModal = document.getElementById("dominoModal");
+        var whatsappHintModal = document.getElementById("whatsappHintModal");
         var btnConfirmar = document.getElementById("btnConfirmar");
-        if (!dominoModal || !btnConfirmar) return;
+        var btnEnviarWpp = document.getElementById("btnEnviarConfirmacaoWpp");
+        if (!dominoModal || !whatsappHintModal || !btnConfirmar || !btnEnviarWpp)
+          return;
 
         var baseMsg =
           "Confirmo presença no seu aniversário dia 25 de abril.";
+        var pendingParticipaDominio = null;
 
         function openDomino() {
           dominoModal.classList.remove("hidden");
@@ -639,6 +702,23 @@
           dominoModal.classList.add("hidden");
           dominoModal.classList.remove("flex", "is-open");
           dominoModal.setAttribute("aria-hidden", "true");
+          if (whatsappHintModal.classList.contains("hidden")) {
+            document.body.style.overflow = "";
+          }
+        }
+
+        function openWhatsappHint() {
+          whatsappHintModal.classList.remove("hidden");
+          whatsappHintModal.classList.add("flex", "is-open");
+          whatsappHintModal.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+
+        function closeWhatsappHint() {
+          whatsappHintModal.classList.add("hidden");
+          whatsappHintModal.classList.remove("flex", "is-open");
+          whatsappHintModal.setAttribute("aria-hidden", "true");
+          pendingParticipaDominio = null;
           document.body.style.overflow = "";
         }
 
@@ -664,13 +744,31 @@
         dominoModal.querySelectorAll("[data-domino-choice]").forEach(function (el) {
           el.addEventListener("click", function () {
             var sim = el.getAttribute("data-domino-choice") === "sim";
+            pendingParticipaDominio = sim;
             closeDomino();
-            openWhatsApp(sim);
+            openWhatsappHint();
           });
         });
 
+        whatsappHintModal
+          .querySelectorAll("[data-close-whatsapp-hint]")
+          .forEach(function (el) {
+            el.addEventListener("click", closeWhatsappHint);
+          });
+
+        btnEnviarWpp.addEventListener("click", function () {
+          if (pendingParticipaDominio === null) return;
+          openWhatsApp(pendingParticipaDominio);
+          closeWhatsappHint();
+        });
+
         document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape" && !dominoModal.classList.contains("hidden")) {
+          if (e.key !== "Escape") return;
+          if (!whatsappHintModal.classList.contains("hidden")) {
+            closeWhatsappHint();
+            return;
+          }
+          if (!dominoModal.classList.contains("hidden")) {
             closeDomino();
           }
         });
