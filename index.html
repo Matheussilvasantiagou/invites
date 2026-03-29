@@ -182,6 +182,16 @@
         opacity: var(--bg-video-opacidade);
         filter: saturate(0.88);
         transition: filter 0.55s ease;
+        pointer-events: none;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      /* Esconde botão / barra nativos do vídeo (Safari, Chrome mobile) */
+      #introVideo::-webkit-media-controls,
+      #introVideo::-webkit-media-controls-enclosure,
+      #introVideo::-webkit-media-controls-start-playback-button,
+      #introVideo::-webkit-media-controls-overlay-enclosure {
+        display: none !important;
       }
       /* Smartphone: viewport estável (barra do navegador) + enquadre em retrato */
       @media (max-width: 767px) {
@@ -215,6 +225,7 @@
       }
       #bgVideoGradient {
         transition: opacity 0.55s ease;
+        pointer-events: none;
       }
       /* Fim da página: área vazia — tira o véu/gradiente pra ver o vídeo nítido */
       body.is-video-lounge .bg-video-veu {
@@ -322,18 +333,29 @@
         visibility: hidden;
         pointer-events: none;
       }
-      #pageLoader .page-loader-spin {
-        width: 3rem;
-        height: 3rem;
+      #pageLoader .page-loader-track {
+        width: min(20rem, 86vw);
+        height: 0.4rem;
         border-radius: 9999px;
-        border: 3px solid rgba(111, 102, 0, 0.2);
-        border-top-color: #6f6600;
-        animation: pageLoaderSpin 0.75s linear infinite;
+        background: rgba(232, 160, 181, 0.22);
+        overflow: hidden;
+        box-shadow: inset 0 1px 2px rgba(141, 84, 96, 0.1);
       }
-      @keyframes pageLoaderSpin {
-        to {
-          transform: rotate(360deg);
-        }
+      #pageLoader .page-loader-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: inherit;
+        background: linear-gradient(
+          90deg,
+          #e8a8bc,
+          #f5c9d8 42%,
+          #ffd6e8 78%,
+          #ffe8f2
+        );
+        transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      #pageLoader .page-loader-heading {
+        color: #c2708c;
       }
     </style>
   </head>
@@ -347,10 +369,22 @@
       aria-live="polite"
       aria-label="Carregando o convite"
     >
-      <div class="page-loader-spin" aria-hidden="true"></div>
-      <p class="font-headline text-lg font-black uppercase tracking-tight text-primary">
+      <p
+        class="page-loader-heading font-headline text-lg font-black uppercase tracking-tight"
+      >
         Carregando…
       </p>
+      <div
+        id="pageLoaderProgressBar"
+        class="page-loader-track"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+        aria-label="Progresso do carregamento da página"
+      >
+        <div id="pageLoaderProgressFill" class="page-loader-fill"></div>
+      </div>
     </div>
 
     <!-- Vídeo de fundo: opacidade em <style> → :root --bg-video-opacidade e --bg-video-veu -->
@@ -365,7 +399,11 @@
         muted
         loop
         playsinline
-        preload="metadata"
+        webkit-playsinline=""
+        preload="auto"
+        disablepictureinpicture
+        disableremoteplayback
+        tabindex="-1"
         poster="./assets/adrianapic.jpeg"
       >
         <source src="./assets/video.MOV" type="video/quicktime" />
@@ -395,13 +433,7 @@
     </header>
 
     <!-- Música: autoplay tenta ao abrir; navegadores podem exigir primeiro toque/scroll -->
-    <audio
-      id="bgMusic"
-      autoplay
-      loop
-      playsinline
-      preload="auto"
-    >
+    <audio id="bgMusic" autoplay loop playsinline preload="auto">
       <source src="./assets/as-it-was.mp3" type="audio/mpeg" />
     </audio>
     <button
@@ -414,7 +446,11 @@
       <span
         id="btnMusicIcon"
         class="material-symbols-outlined text-[26px]"
-        style="font-variation-settings: &quot;FILL&quot; 0, &quot;wght&quot; 500"
+        style="
+          font-variation-settings:
+            &quot;FILL&quot; 0,
+            &quot;wght&quot; 500;
+        "
         >music_note</span
       >
     </button>
@@ -549,7 +585,7 @@
             </div>
             <span
               class="font-headline font-black text-xs uppercase tracking-widest text-primary block mb-2"
-              >Instrução Especial</span
+              >ATENÇÃO!</span
             >
             <p class="text-sm font-bold leading-snug text-on-primary-container">
               "Traga um presente engraçado para o bingo (vibe inimigo secreto)!"
@@ -1108,12 +1144,57 @@
         var v = document.getElementById("introVideo");
         if (!v) return;
         v.muted = true;
+        v.defaultMuted = true;
+        v.setAttribute("muted", "");
         function tryPlay() {
-          v.play().catch(function () {});
+          var p = v.play();
+          if (p && typeof p.catch === "function") p.catch(function () {});
+        }
+        var gesturesAttached = false;
+        function detachGestureUnlock() {
+          if (!gesturesAttached) return;
+          gesturesAttached = false;
+          document.removeEventListener("pointerdown", unlockBgVideo, true);
+          document.removeEventListener("touchstart", unlockBgVideo, true);
+          document.removeEventListener("click", unlockBgVideo, true);
+          window.removeEventListener("scroll", unlockBgVideo, {
+            capture: true,
+          });
+        }
+        function unlockBgVideo() {
+          tryPlay();
+          detachGestureUnlock();
+        }
+        function attachGestureUnlock() {
+          if (gesturesAttached) return;
+          gesturesAttached = true;
+          document.addEventListener("pointerdown", unlockBgVideo, true);
+          document.addEventListener("touchstart", unlockBgVideo, true);
+          document.addEventListener("click", unlockBgVideo, true);
+          window.addEventListener("scroll", unlockBgVideo, {
+            passive: true,
+            capture: true,
+          });
         }
         tryPlay();
+        ["loadedmetadata", "loadeddata", "canplay", "canplaythrough"].forEach(
+          function (ev) {
+            v.addEventListener(ev, tryPlay, { once: true });
+          },
+        );
+        v.addEventListener("playing", detachGestureUnlock);
+        requestAnimationFrame(function () {
+          if (v.paused) attachGestureUnlock();
+        });
+        v.addEventListener("pause", function () {
+          if (document.hidden) return;
+          tryPlay();
+        });
         document.addEventListener("visibilitychange", function () {
           if (!document.hidden) tryPlay();
+        });
+        window.addEventListener("pageshow", function (e) {
+          if (e.persisted) tryPlay();
         });
       })();
     </script>
@@ -1125,7 +1206,9 @@
         function vh() {
           if (window.visualViewport && window.visualViewport.height)
             return window.visualViewport.height;
-          return window.innerHeight || document.documentElement.clientHeight || 0;
+          return (
+            window.innerHeight || document.documentElement.clientHeight || 0
+          );
         }
         function syncVideoLounge() {
           var r = spacer.getBoundingClientRect();
@@ -1162,23 +1245,76 @@
       (function () {
         var loader = document.getElementById("pageLoader");
         var body = document.body;
-        function finishLoad() {
+        var fill = document.getElementById("pageLoaderProgressFill");
+        var bar = document.getElementById("pageLoaderProgressBar");
+        var progress = 0;
+        var creepTimer = null;
+
+        function setProgress(p) {
+          progress = Math.min(100, Math.max(0, p));
+          if (fill) fill.style.width = progress + "%";
+          if (bar) bar.setAttribute("aria-valuenow", String(Math.round(progress)));
+        }
+
+        function stopCreep() {
+          if (creepTimer !== null) {
+            clearInterval(creepTimer);
+            creepTimer = null;
+          }
+        }
+
+        function hideLoader() {
           body.classList.remove("page-loading");
           if (!loader) return;
           loader.classList.add("is-done");
           loader.setAttribute("aria-busy", "false");
-          var removeAfter = 550;
           setTimeout(function () {
             if (loader.parentNode) loader.parentNode.removeChild(loader);
-          }, removeAfter);
+          }, 550);
         }
+
+        function finishLoad() {
+          stopCreep();
+          setProgress(100);
+          setTimeout(hideLoader, 420);
+        }
+
+        setProgress(6);
+
+        if (document.readyState !== "loading") {
+          setProgress(Math.max(progress, 22));
+        } else {
+          document.addEventListener("DOMContentLoaded", function () {
+            setProgress(Math.max(progress, 32));
+          });
+        }
+
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(function () {
+            setProgress(Math.max(progress, 58));
+          });
+        }
+
+        creepTimer = setInterval(function () {
+          if (document.readyState === "complete") {
+            stopCreep();
+            return;
+          }
+          if (progress < 88) {
+            setProgress(progress + (88 - progress) * 0.07);
+          }
+        }, 180);
+
         if (document.readyState === "complete") {
           finishLoad();
         } else {
           window.addEventListener("load", finishLoad);
         }
         window.addEventListener("pageshow", function (e) {
-          if (e.persisted) finishLoad();
+          if (e.persisted) {
+            stopCreep();
+            hideLoader();
+          }
         });
       })();
     </script>
@@ -1192,8 +1328,16 @@
         if (!audio || !btn || !icon) return;
 
         audio.volume = 0.85;
+        var MUSIC_START_AT = 4;
         var explicitlyPaused = false;
         var unlockAttached = false;
+
+        function applyMusicStartPosition() {
+          if (!audio.duration || audio.duration < MUSIC_START_AT) return;
+          if (audio.currentTime < MUSIC_START_AT - 0.04) {
+            audio.currentTime = MUSIC_START_AT;
+          }
+        }
 
         function showSoundHint() {
           if (soundHint) soundHint.classList.remove("hidden");
@@ -1290,6 +1434,12 @@
             tryUnlock();
           });
         }
+
+        audio.addEventListener("loadedmetadata", applyMusicStartPosition);
+        audio.addEventListener("playing", applyMusicStartPosition);
+        audio.addEventListener("timeupdate", function () {
+          if (!audio.paused) applyMusicStartPosition();
+        });
 
         audio.addEventListener("play", function () {
           syncUi();
