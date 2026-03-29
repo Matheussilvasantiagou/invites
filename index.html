@@ -199,7 +199,13 @@
         opacity: 0.2;
       }
 
-      /* Cantos arredondados estáveis com filhos transformados (Safari / iOS) */
+      /* Raio único para todos os cards do convite (= theme borderRadius.lg → 2rem) */
+      .invite-card {
+        border-radius: 2rem;
+        overflow: hidden;
+      }
+
+      /* WebKit: composição mais estável no primeiro card */
       .hero-invite-card {
         transform: translateZ(0);
         -webkit-transform: translateZ(0);
@@ -279,10 +285,10 @@
           >
         </div>
         <div
-          class="hero-invite-card bg-surface-container-low relative isolate overflow-hidden rounded-2xl p-6 text-center shadow-sm flex flex-col min-w-0 sm:p-8 md:block md:p-16 md:text-left"
+          class="hero-invite-card invite-card bg-surface-container-low relative isolate p-6 text-center shadow-sm flex flex-col min-w-0 sm:p-8 md:block md:p-16 md:text-left"
         >
           <div
-            class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-primary-container/30 blur-3xl md:-right-20 md:-top-20 md:h-64 md:w-64"
+            class="pointer-events-none absolute right-4 top-4 h-44 w-44 rounded-full bg-primary-container/25 blur-3xl sm:right-6 sm:top-6 sm:h-52 sm:w-52 md:right-10 md:top-10 md:h-60 md:w-60"
           ></div>
           <h2
             class="font-headline font-black text-primary leading-[1.08] uppercase tracking-tighter mb-6 relative z-10 w-full max-w-full pr-0 md:pr-[15rem] text-[clamp(1.75rem,8.5vw,3.5rem)] md:text-8xl"
@@ -291,7 +297,7 @@
             <span class="text-secondary">Convidado(a)!</span>
           </h2>
           <div
-            class="relative z-20 mx-auto mb-8 h-36 w-36 shrink-0 rotate-3 transition-transform duration-300 hover:scale-105 sm:h-40 sm:w-40 md:absolute md:top-8 md:right-10 md:mx-0 md:mb-0 md:h-48 md:w-48 md:rotate-6 md:hover:scale-110"
+            class="relative z-20 mx-auto mb-8 h-36 w-36 shrink-0 transition-transform duration-300 hover:scale-105 sm:h-40 sm:w-40 md:absolute md:top-8 md:right-10 md:mx-0 md:mb-0 md:h-48 md:rotate-6 md:hover:scale-110"
           >
             <img
               alt="Adriana"
@@ -340,7 +346,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
         <!-- Bingo Card -->
         <article
-          class="bg-surface-container-highest rounded-lg p-8 relative flex flex-col justify-between min-h-[400px] border-b-8 border-primary/20"
+          class="invite-card bg-surface-container-highest rounded-lg p-8 relative flex flex-col justify-between min-h-[400px] border-b-8 border-primary/20"
         >
           <div>
             <div class="flex justify-between items-start mb-8">
@@ -372,7 +378,7 @@
           </div>
           <!-- Special Instruction Callout -->
           <div
-            class="bg-primary-container rounded-md p-6 border-l-4 border-primary shadow-sm relative overflow-hidden"
+            class="invite-card bg-primary-container rounded-lg p-6 border-l-4 border-primary shadow-sm relative"
           >
             <div class="absolute top-0 right-0 p-2 opacity-10">
               <span class="material-symbols-outlined text-6xl"
@@ -391,7 +397,7 @@
 
         <!-- Domino Tournament Card -->
         <article
-          class="bg-surface-container-highest rounded-lg p-8 relative flex flex-col min-h-[400px] border-b-8 border-secondary/20 overflow-hidden"
+          class="invite-card bg-surface-container-highest rounded-lg p-8 relative flex flex-col min-h-[400px] border-b-8 border-secondary/20"
         >
           <div
             class="absolute top-0 right-0 w-32 h-full opacity-5 pointer-events-none"
@@ -529,7 +535,7 @@
 
       <!-- RSVP Section -->
       <section
-        class="bg-surface-container-low rounded-xl p-10 md:p-16 text-center relative overflow-hidden"
+        class="invite-card bg-surface-container-low rounded-lg p-10 md:p-16 text-center relative"
       >
         <div
           class="absolute inset-0 opacity-5 pointer-events-none"
@@ -577,7 +583,7 @@
       <!-- Location Hint -->
       <div class="mt-12 flex flex-col items-center">
         <div
-          class="w-full h-48 rounded-lg overflow-hidden bg-surface-container-high relative mb-6 shadow-inner"
+          class="invite-card w-full h-48 rounded-lg bg-surface-container-high relative mb-6 shadow-inner"
         >
           <img
             alt="Styled map of the event location with a vintage aesthetic pin"
@@ -595,7 +601,7 @@
           </div>
         </div>
         <p
-          class="font-headline font-black tracking-widest text-sm uppercase text-white bg-on-surface/90 rounded-xl px-5 py-2.5 text-center shadow-sm"
+          class="font-headline font-black tracking-widest text-sm uppercase text-white bg-on-surface/90 rounded-lg px-5 py-2.5 text-center shadow-sm"
         >
           Endereço será enviado via WhatsApp
         </p>
@@ -617,7 +623,7 @@
         aria-label="Fechar"
       ></button>
       <div
-        class="domino-modal-card relative z-10 w-full max-w-[min(100%,24rem)] overflow-hidden rounded-[2rem] border border-outline-variant/30 bg-surface-container-low shadow-[0_24px_60px_rgba(57,56,49,0.22)]"
+        class="invite-card domino-modal-card relative z-10 w-full max-w-[min(100%,24rem)] rounded-lg border border-outline-variant/30 bg-surface-container-low shadow-[0_24px_60px_rgba(57,56,49,0.22)]"
       >
         <div
           class="h-2 w-full bg-gradient-to-r from-primary-container via-secondary-container to-tertiary-container"
@@ -682,7 +688,7 @@
         aria-label="Fechar"
       ></button>
       <div
-        class="whatsapp-hint-modal-card relative z-10 w-full max-w-[min(100%,24rem)] overflow-hidden rounded-[2rem] border border-outline-variant/30 bg-surface-container-low shadow-[0_24px_60px_rgba(57,56,49,0.22)]"
+        class="invite-card whatsapp-hint-modal-card relative z-10 w-full max-w-[min(100%,24rem)] rounded-lg border border-outline-variant/30 bg-surface-container-low shadow-[0_24px_60px_rgba(57,56,49,0.22)]"
       >
         <div
           class="h-2 w-full bg-gradient-to-r from-primary-container via-secondary-container to-tertiary-container"
@@ -742,7 +748,7 @@
         aria-label="Fechar"
       ></button>
       <div
-        class="talvez-modal-card relative z-10 w-full max-w-[min(100%,22rem)] overflow-hidden rounded-[2rem] border border-outline-variant/30 bg-surface-container-low shadow-[0_24px_60px_rgba(57,56,49,0.22)]"
+        class="invite-card talvez-modal-card relative z-10 w-full max-w-[min(100%,22rem)] rounded-lg border border-outline-variant/30 bg-surface-container-low shadow-[0_24px_60px_rgba(57,56,49,0.22)]"
       >
         <div
           class="h-2 w-full bg-gradient-to-r from-primary-container via-secondary-container to-tertiary-container"
