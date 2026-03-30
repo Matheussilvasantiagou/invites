@@ -205,9 +205,9 @@
           min-width: 100%;
           min-height: 100%;
           min-height: 100dvh;
-          min-height: 100svh;
-          /* Retrato + vídeo largo (ex. 16:9): cobre a tela sem faixas nas laterais */
-          min-width: max(100%, 177.78svh);
+          /* Retrato: largura mínima ~16/9 da altura (dvh; vh como fallback) */
+          min-width: max(100%, 177.78vh);
+          min-width: max(100%, 177.78dvh);
         }
         @media (orientation: landscape) {
           #introVideo {
@@ -215,7 +215,6 @@
             min-width: 100%;
             min-height: 100%;
             min-height: 100dvh;
-            min-height: 100svh;
           }
         }
       }
@@ -290,8 +289,20 @@
         object-position: center;
       }
 
+      /* Evita faixa branca quando a barra do Chrome some: html com mesmo fundo + altura dinâmica */
+      html {
+        min-height: 100%;
+        min-height: 100dvh;
+        background-color: #fffbff;
+      }
       body {
         min-height: max(884px, 100dvh);
+      }
+      /* Camada do vídeo: altura real do visualViewport no mobile (Chrome) */
+      #bgVideoShell {
+        height: var(--vvh, 100dvh);
+        min-height: 100dvh;
+        min-height: -webkit-fill-available;
       }
 
       /* Espaço final: fallbacks para mobile (svh/min() antigos quebram e o bloco some) */
@@ -370,6 +381,26 @@
         letter-spacing: 0.04em;
       }
     </style>
+    <script>
+      (function () {
+        function setVvh() {
+          var h = window.visualViewport
+            ? window.visualViewport.height
+            : window.innerHeight;
+          document.documentElement.style.setProperty("--vvh", h + "px");
+        }
+        setVvh();
+        window.addEventListener("resize", setVvh, { passive: true });
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener("resize", setVvh, {
+            passive: true,
+          });
+          window.visualViewport.addEventListener("scroll", setVvh, {
+            passive: true,
+          });
+        }
+      })();
+    </script>
   </head>
   <body
     class="page-loading bg-surface font-body text-on-surface selection:bg-secondary-container selection:text-on-secondary-container overflow-x-hidden"
@@ -408,7 +439,8 @@
 
     <!-- Vídeo de fundo: opacidade em <style> → :root --bg-video-opacidade e --bg-video-veu -->
     <div
-      class="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+      id="bgVideoShell"
+      class="pointer-events-none fixed left-0 right-0 top-0 z-0 w-full overflow-hidden"
       aria-hidden="true"
     >
       <video
