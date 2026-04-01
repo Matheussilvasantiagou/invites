@@ -317,7 +317,6 @@
         }
       }
       #talvezModal.is-open .talvez-modal-card,
-      #dominoModal.is-open .domino-modal-card,
       #whatsappHintModal.is-open .whatsapp-hint-modal-card {
         animation: talvezModalIn 0.28s ease-out both;
       }
@@ -908,71 +907,6 @@
       ></div>
     </main>
 
-    <!-- Modal dominó (antes do WhatsApp) -->
-    <div
-      id="dominoModal"
-      class="fixed inset-0 z-[101] hidden items-center justify-center p-4 sm:p-6"
-      aria-hidden="true"
-      aria-labelledby="dominoModalTitle"
-      role="dialog"
-    >
-      <button
-        type="button"
-        class="absolute inset-0 bg-on-surface/45 backdrop-blur-[2px] transition-opacity"
-        data-close-domino
-        aria-label="Fechar"
-      ></button>
-      <div
-        class="invite-card domino-modal-card relative z-10 w-full max-w-[min(100%,24rem)] rounded-lg border border-outline-variant/30 bg-surface-container-low shadow-[0_24px_60px_rgba(57,56,49,0.22)]"
-      >
-        <div
-          class="h-2 w-full bg-gradient-to-r from-primary-container via-secondary-container to-tertiary-container"
-        ></div>
-        <button
-          type="button"
-          class="absolute right-3 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-primary shadow-sm ring-1 ring-outline-variant/30 transition hover:bg-white"
-          data-close-domino
-          aria-label="Fechar"
-        >
-          <span class="material-symbols-outlined text-[22px]">close</span>
-        </button>
-        <div class="px-6 pb-7 pt-6 text-center">
-          <div
-            class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-container/90 text-primary shadow-inner ring-1 ring-primary/20"
-          >
-            <span class="material-symbols-outlined text-[34px]">grid_view</span>
-          </div>
-          <h3
-            id="dominoModalTitle"
-            class="font-headline text-xl font-black uppercase tracking-tight text-primary sm:text-2xl"
-          >
-            Campeonato de dominó
-          </h3>
-          <p
-            class="mt-3 font-body text-base leading-relaxed text-on-surface-variant"
-          >
-            Você vai participar do campeonato de dominó?
-          </p>
-          <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <button
-              type="button"
-              class="w-full rounded-full bg-secondary px-6 py-3.5 font-label text-base font-extrabold text-white shadow-md transition hover:brightness-105 active:scale-[0.98] sm:w-auto sm:min-w-[8rem]"
-              data-domino-choice="sim"
-            >
-              Sim
-            </button>
-            <button
-              type="button"
-              class="w-full rounded-full border-4 border-primary/25 bg-white px-6 py-3 font-label text-base font-extrabold text-primary transition hover:bg-primary-container/20 active:scale-[0.98] sm:w-auto sm:min-w-[8rem]"
-              data-domino-choice="nao"
-            >
-              Não
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Modal: entrar no grupo do WhatsApp -->
     <div
       id="whatsappHintModal"
@@ -1130,37 +1064,13 @@
     </script>
     <script>
       (function () {
-        var dominoModal = document.getElementById("dominoModal");
         var whatsappHintModal = document.getElementById("whatsappHintModal");
         var btnConfirmar = document.getElementById("btnConfirmar");
         var btnEnviarWpp = document.getElementById("btnEnviarConfirmacaoWpp");
-        if (
-          !dominoModal ||
-          !whatsappHintModal ||
-          !btnConfirmar ||
-          !btnEnviarWpp
-        )
-          return;
+        if (!whatsappHintModal || !btnConfirmar || !btnEnviarWpp) return;
 
         var WHATSAPP_GROUP_URL =
           "https://chat.whatsapp.com/IG5LYV40YC2LiJiKBM3P1t?mode=gi_t";
-        var pendingParticipaDominio = null;
-
-        function openDomino() {
-          dominoModal.classList.remove("hidden");
-          dominoModal.classList.add("flex", "is-open");
-          dominoModal.setAttribute("aria-hidden", "false");
-          document.body.style.overflow = "hidden";
-        }
-
-        function closeDomino() {
-          dominoModal.classList.add("hidden");
-          dominoModal.classList.remove("flex", "is-open");
-          dominoModal.setAttribute("aria-hidden", "true");
-          if (whatsappHintModal.classList.contains("hidden")) {
-            document.body.style.overflow = "";
-          }
-        }
 
         function openWhatsappHint() {
           whatsappHintModal.classList.remove("hidden");
@@ -1173,7 +1083,6 @@
           whatsappHintModal.classList.add("hidden");
           whatsappHintModal.classList.remove("flex", "is-open");
           whatsappHintModal.setAttribute("aria-hidden", "true");
-          pendingParticipaDominio = null;
           document.body.style.overflow = "";
         }
 
@@ -1181,24 +1090,7 @@
           window.open(WHATSAPP_GROUP_URL, "_blank", "noopener,noreferrer");
         }
 
-        btnConfirmar.addEventListener("click", openDomino);
-
-        dominoModal
-          .querySelectorAll("[data-close-domino]")
-          .forEach(function (el) {
-            el.addEventListener("click", closeDomino);
-          });
-
-        dominoModal
-          .querySelectorAll("[data-domino-choice]")
-          .forEach(function (el) {
-            el.addEventListener("click", function () {
-              var sim = el.getAttribute("data-domino-choice") === "sim";
-              pendingParticipaDominio = sim;
-              closeDomino();
-              openWhatsappHint();
-            });
-          });
+        btnConfirmar.addEventListener("click", openWhatsappHint);
 
         whatsappHintModal
           .querySelectorAll("[data-close-whatsapp-hint]")
@@ -1207,7 +1099,6 @@
           });
 
         btnEnviarWpp.addEventListener("click", function () {
-          if (pendingParticipaDominio === null) return;
           openWhatsappGroup();
           closeWhatsappHint();
         });
@@ -1216,10 +1107,6 @@
           if (e.key !== "Escape") return;
           if (!whatsappHintModal.classList.contains("hidden")) {
             closeWhatsappHint();
-            return;
-          }
-          if (!dominoModal.classList.contains("hidden")) {
-            closeDomino();
           }
         });
       })();
